@@ -1,0 +1,6 @@
+@EasyOneService_HostAddress = http://localhost:5080
+
+GET {{EasyOneService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
