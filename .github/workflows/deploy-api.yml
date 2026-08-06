@@ -13,7 +13,7 @@ permissions:
 env:
   AZURE_WEBAPP_NAME: textile-erp-api
   DOTNET_VERSION: "8.0.x"
-  PROJECT_PATH: EasyOneService/EasyOne.WebAPI/EasyOne.WebAPI.csproj
+  PROJECT_PATH: EasyOneService/EasyOne.WebAPI.csproj
   PUBLISH_PATH: ./publish
 
 jobs:
@@ -46,6 +46,7 @@ jobs:
           --output "${{ env.PUBLISH_PATH }}"
 
       - name: Login to Azure using Service Principal
+        id: azure_login
         uses: azure/login@v2
         with:
           creds: >-
@@ -63,5 +64,5 @@ jobs:
           package: ${{ env.PUBLISH_PATH }}
 
       - name: Azure logout
-        if: always()
+        if: always() && steps.azure_login.outcome == 'success'
         run: az logout
