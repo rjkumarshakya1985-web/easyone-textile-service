@@ -7,6 +7,9 @@ using Textile.Core.Interfaces.Services;
 
 namespace EasyOneService.Controllers
 {
+    /// <summary>
+    /// Base Controller
+    /// </summary>
     [ApiController]
     [Authorize]
     public abstract class BaseController : ControllerBase
