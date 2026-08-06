@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  AZURE_WEBAPP_NAME: textile-erp-api
+  AZURE_WEBAPP_NAME: textile-erp
   DOTNET_VERSION: "8.0.x"
   PROJECT_PATH: EasyOneService/EasyOne.WebAPI.csproj
   PUBLISH_PATH: ./publish
