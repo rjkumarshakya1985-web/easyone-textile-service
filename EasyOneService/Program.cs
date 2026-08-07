@@ -6,7 +6,7 @@ using Textile.Core.DI;
 using EasyOneService.ErrorHandlig;
 
 var builder = WebApplication.CreateBuilder(args);
-
+const string CorsPolicyName = "AngularClient";
 var Configuration = builder.Configuration;
 
 builder.Services.AddHttpContextAccessor();
@@ -20,16 +20,23 @@ builder.Services.AddUnitOfWork();
 builder.Services.AddTextileDb(Configuration);
 
 // CORS ---------------------------------------------------
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("TextileCors",
-        policy =>
+    options.AddPolicy(CorsPolicyName, policy =>
+    {
+        if (allowedOrigins.Length > 0)
         {
-            policy.SetIsOriginAllowed(_ => true) // allow all
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+            policy
+                .WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    });
 });
 // ---------------------------------------------------------
 
