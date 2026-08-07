@@ -11,7 +11,7 @@ using Textile.Core.Interfaces.Services;
 namespace EasyOneService.Controllers
 {
     /// <summary>
-    /// Stock Controller
+    /// Stock Controller changes
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
