@@ -24,41 +24,46 @@ var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
 
+var allowedOriginsFromEnvironment = (builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+allowedOrigins = allowedOrigins
+    .Concat(allowedOriginsFromEnvironment)
+    .Select(NormalizeOrigin)
+    .OfType<string>()
+    .Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .Distinct(StringComparer.OrdinalIgnoreCase)
+    .ToArray();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, policy =>
     {
-        if (allowedOrigins.Length > 0)
-        {
-            policy
-                .WithOrigins(allowedOrigins)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        }
+        policy
+            .WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 // ---------------------------------------------------------
 
 
-// ----------------------------
-//  ADD JWT AUTHENTICATION
-// ----------------------------
-// ----------------------------
-//  ADD JWT AUTHENTICATION
-// ----------------------------
-var jwtSettings = Configuration.GetSection("JwtSettings");
+var jwtKey = GetRequiredConfigurationValue(
+    Configuration,
+    "JwtSettings:Web:Key",
+    "JWT_WEB_KEY");
 
-// We use ONE key + issuer (shared)
-var key = Encoding.UTF8.GetBytes(jwtSettings["Web:Key"]);
-var issuer = jwtSettings["Web:Issuer"];
+var jwtIssuer = GetRequiredConfigurationValue(
+    Configuration,
+    "JwtSettings:Web:Issuer",
+    "JWT_WEB_ISSUER");
 
-// All valid audiences
 var validAudiences = new[]
 {
-    jwtSettings["Web:Audience"],
-    jwtSettings["Mobile:Audience"],
-    jwtSettings["Windows:Audience"]
+    GetRequiredConfigurationValue(Configuration, "JwtSettings:Web:Audience", "JWT_WEB_AUDIENCE"),
+    GetRequiredConfigurationValue(Configuration, "JwtSettings:Mobile:Audience", "JWT_MOBILE_AUDIENCE"),
+    GetRequiredConfigurationValue(Configuration, "JwtSettings:Windows:Audience", "JWT_WINDOWS_AUDIENCE")
 };
 
 builder.Services.AddAuthentication(options =>
@@ -75,10 +80,10 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
 
-        ValidIssuer = issuer,
+        ValidIssuer = jwtIssuer,
         ValidAudiences = validAudiences,
 
-        IssuerSigningKey = new SymmetricSecurityKey(key),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
         ClockSkew = TimeSpan.Zero
     };
 });
@@ -135,13 +140,36 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 }
 
-app.UseMiddleware<ErrorHandlingMiddleware>();
-
-app.UseCors("TextileCors");
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors(CorsPolicyName);
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
+
+static string GetRequiredConfigurationValue(IConfiguration configuration, params string[] keys)
+{
+    foreach (var key in keys)
+    {
+        var value = configuration[key];
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+    }
+
+    throw new InvalidOperationException($"Missing required configuration value. Set one of: {string.Join(", ", keys)}");
+}
+
+static string? NormalizeOrigin(string origin)
+{
+    origin = origin.Trim().TrimEnd('/');
+
+    return Uri.TryCreate(origin, UriKind.Absolute, out var uri)
+        ? uri.GetLeftPart(UriPartial.Authority)
+        : origin;
+}
