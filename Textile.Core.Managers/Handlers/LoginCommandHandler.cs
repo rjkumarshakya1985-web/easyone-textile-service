@@ -140,6 +140,7 @@ namespace Textile.Core.Managers.Handlers
                 RoleName = user.Role.Name,
                 UserName = user.UserName,
                 Name   = displayName,
+                IsDeveloper = user.IsDeveloper,
                 IsLoginFailed = true 
             };
         }

@@ -11,6 +11,8 @@
 
         public string Name { get; set; }
 
+        public bool IsDeveloper { get; set; }
+
         public bool IsLoginFailed { get; set; }
 
         public string Message { get; set; }

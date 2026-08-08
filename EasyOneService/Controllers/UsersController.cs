@@ -37,7 +37,13 @@ namespace EasyOneService.Controllers
             return await _userService.GetTableData(tableDataRequest);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("current")]
+        public async Task<UserResponse?> GetCurrent()
+        {
+            return await _userService.GetByIdAsync(CurrentUserId);
+        }
+
+        [HttpGet("{id:guid}")]
         public async Task<UserResponse?> Get(Guid id)
         {
             return await _userService.GetByIdAsync(id);
@@ -53,7 +59,7 @@ namespace EasyOneService.Controllers
             return await _mediator.Send(command);
         }
 
-        [HttpGet("toggle/{id}")]
+        [HttpGet("toggle/{id:guid}")]
         public async Task<UserResponse?> Toggle(Guid id)
         {
             return await _userService.GetByIdAsync(id);

@@ -23,6 +23,8 @@ namespace Textile.Core.Entities.DbEnitites
 
         public bool IsActive { get; set; }
 
+        public bool IsDeveloper { get; set; }
+
         // Navigation Property
         public Role Role { get; set; }
 

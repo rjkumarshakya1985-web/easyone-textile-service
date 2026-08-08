@@ -39,6 +39,7 @@ namespace Textile.Core.Managers.Services
                 Email = user.Email,
                 Phone = user.Phone,
                 IsActive = user.IsActive,
+                IsDeveloper = user.IsDeveloper,
                 Role = (RoleEnum)user.RoleId,
                 UserDetail = user.UserDetail == null ? null : new UserDetailResponse
                 {
@@ -85,7 +86,8 @@ namespace Textile.Core.Managers.Services
                     Email = x.Email,
                     Phone = x.Phone,
                     Role = (RoleEnum)x.RoleId,
-                    IsActive = x.IsActive
+                    IsActive = x.IsActive,
+                    IsDeveloper = x.IsDeveloper
                 })
                 .ToListAsync();
 

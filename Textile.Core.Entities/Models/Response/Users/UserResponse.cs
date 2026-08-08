@@ -11,6 +11,7 @@ namespace Textile.Core.Entities.Models.Response.Users
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDeveloper { get; set; }
         public UserDetailResponse? UserDetail { get; set; }
     }
 

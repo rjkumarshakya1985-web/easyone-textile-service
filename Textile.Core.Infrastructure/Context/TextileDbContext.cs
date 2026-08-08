@@ -34,6 +34,7 @@ namespace Textile.Core.Infrastructure.Context
         public DbSet<SupplierProductPriceHistory> SupplierProductPriceHistories { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<AdminMenuSetting> AdminMenuSettings { get; set; }
 
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -96,6 +97,14 @@ namespace Textile.Core.Infrastructure.Context
             modelBuilder.Entity<User>()
                 .Property(x => x.Id)
                 .HasDefaultValueSql("NEWID()");
+
+            modelBuilder.Entity<AdminMenuSetting>(entity =>
+            {
+                entity.HasIndex(x => x.MenuKey).IsUnique();
+                entity.Property(x => x.MenuKey).HasMaxLength(120).IsRequired();
+                entity.Property(x => x.Label).HasMaxLength(150).IsRequired();
+                entity.Property(x => x.IsEnabled).HasDefaultValue(true);
+            });
 
             modelBuilder.Entity<SaleVoucherDetail>(entity =>
             {

@@ -45,6 +45,7 @@ namespace Textile.Core.Managers.Handlers.Commands.Users
                     Email = request.Email,
                     Phone = request.Phone,
                     IsActive = request.IsActive,
+                    IsDeveloper = false,
                     CreatedBy = request.CreatedBy
                         ?? throw new InvalidOperationException("CreatedBy is required"),
                     CreatedByUserName = request.CreatedByUserName,

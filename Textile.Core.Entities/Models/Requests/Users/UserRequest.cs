@@ -11,6 +11,7 @@
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDeveloper { get; set; }
         public Guid? CreatedBy { get; set; }
         public string? CreatedByUserName { get; set; }
     }
