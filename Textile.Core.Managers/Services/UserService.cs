@@ -54,7 +54,8 @@ namespace Textile.Core.Managers.Services
 
         public async Task<TableResult<UserResponse>> GetTableData(TableDataRequest dataRequest)
         {
-            var query = _context.Users.Where(x=>x.RoleId!=(int)RoleEnum.Supplier)
+            var query = _context.Users
+                 .Where(x => x.RoleId != (int)RoleEnum.Supplier && !x.IsDeveloper)
                  .AsNoTracking();
 
 
