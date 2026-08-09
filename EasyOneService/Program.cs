@@ -128,7 +128,7 @@ builder.Services.AddSwaggerGen(c =>
 
     c.AddSecurityRequirement(securityRequirement);
 });
-
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -146,7 +146,7 @@ app.UseCors(CorsPolicyName);
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHealthChecks("/health");
 app.MapControllers();
 app.Run();
 
