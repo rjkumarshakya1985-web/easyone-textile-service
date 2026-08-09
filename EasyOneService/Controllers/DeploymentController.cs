@@ -11,7 +11,7 @@ namespace EasyOne.WebAPI.Controllers
         {
             return Ok(new
             {
-                version = "1.0",
+                version = "2.0",
                 message = "Deployment Slot Demo"
             });
         }
