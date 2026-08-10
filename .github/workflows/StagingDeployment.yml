@@ -1,0 +1,66 @@
+name: Deploy Textile API - Staging
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  AZURE_WEBAPP_NAME: textile-erp
+  AZURE_SLOT_NAME: staging
+  DOTNET_VERSION: "8.0.x"
+  PROJECT_PATH: EasyOneService/EasyOne.WebAPI.csproj
+  PUBLISH_PATH: ./publish
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
+
+      - name: Build application
+        run: >
+          dotnet build "${{ env.PROJECT_PATH }}"
+          --configuration Release
+          --no-restore
+
+      - name: Publish application
+        run: >
+          dotnet publish "${{ env.PROJECT_PATH }}"
+          --configuration Release
+          --no-build
+          --output "${{ env.PUBLISH_PATH }}"
+
+      - name: Login to Azure using Service Principal
+        id: azure_login
+        uses: azure/login@v2
+        with:
+          creds: >-
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            }
+
+      - name: Deploy to Staging Slot
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: ${{ env.AZURE_SLOT_NAME }}
+          package: ${{ env.PUBLISH_PATH }}
+
+      - name: Azure logout
+        if: always() && steps.azure_login.outcome == 'success'
+        run: az logout
