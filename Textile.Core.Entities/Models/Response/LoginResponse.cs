@@ -13,6 +13,8 @@
 
         public bool IsDeveloper { get; set; }
 
+        public bool MustChangePassword { get; set; }
+
         public bool IsLoginFailed { get; set; }
 
         public string Message { get; set; }

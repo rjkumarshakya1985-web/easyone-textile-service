@@ -14,7 +14,7 @@ namespace EasyOneService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize]
     public class UsersController : BaseController
     {
 
@@ -32,6 +32,7 @@ namespace EasyOneService.Controllers
         }
 
         [HttpPost("table")]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<TableResult<UserResponse>> GetTable(TableDataRequest tableDataRequest)
         {
             return await _userService.GetTableData(tableDataRequest);
@@ -44,12 +45,14 @@ namespace EasyOneService.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<UserResponse?> Get(Guid id)
         {
             return await _userService.GetByIdAsync(id);
         }
 
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<Guid> SaveUser(UserRequest userRequest)
         {
             userRequest.CreatedBy = CurrentUserId;
@@ -60,6 +63,7 @@ namespace EasyOneService.Controllers
         }
 
         [HttpGet("toggle/{id:guid}")]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<UserResponse?> Toggle(Guid id)
         {
             return await _userService.GetByIdAsync(id);

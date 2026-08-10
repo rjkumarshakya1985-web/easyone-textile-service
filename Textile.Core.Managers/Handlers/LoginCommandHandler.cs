@@ -122,6 +122,7 @@ namespace Textile.Core.Managers.Handlers
             await _refreshtokenRepository.AddAsync(tokenEntity);
 
             string? displayName = user.UserName;
+            var mustChangePassword = false;
 
             if (user.RoleId == (int)RoleEnum.Supplier)
             {
@@ -130,6 +131,7 @@ namespace Textile.Core.Managers.Handlers
                 );
 
                 displayName = supplier?.Name ?? user.UserName;
+                mustChangePassword = supplier != null && user.Password == supplier.Code;
             }
 
 
@@ -141,6 +143,7 @@ namespace Textile.Core.Managers.Handlers
                 UserName = user.UserName,
                 Name   = displayName,
                 IsDeveloper = user.IsDeveloper,
+                MustChangePassword = mustChangePassword,
                 IsLoginFailed = true 
             };
         }
