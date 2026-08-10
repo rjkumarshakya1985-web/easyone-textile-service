@@ -35,6 +35,8 @@ namespace Textile.Core.Infrastructure.Context
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<AdminMenuSetting> AdminMenuSettings { get; set; }
+        public DbSet<StickerPrintSetting> StickerPrintSettings { get; set; }
+        public DbSet<StickerPrintFieldSetting> StickerPrintFieldSettings { get; set; }
 
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -104,6 +106,44 @@ namespace Textile.Core.Infrastructure.Context
                 entity.Property(x => x.MenuKey).HasMaxLength(120).IsRequired();
                 entity.Property(x => x.Label).HasMaxLength(150).IsRequired();
                 entity.Property(x => x.IsEnabled).HasDefaultValue(true);
+            });
+
+            modelBuilder.Entity<StickerPrintSetting>(entity =>
+            {
+                entity.Property(x => x.CompanyShortName).HasMaxLength(30).IsRequired();
+                entity.Property(x => x.WholeSaleRatePrefix).HasMaxLength(20);
+                entity.Property(x => x.WholeSaleRatePostfix).HasMaxLength(20);
+                entity.Property(x => x.WholeSaleRateAddAmount).HasColumnType("decimal(18,2)");
+                entity.Property(x => x.ShowSupplierCode).HasDefaultValue(true);
+                entity.Property(x => x.ShowCompanyShortName).HasDefaultValue(true);
+                entity.Property(x => x.ShowWholeSaleRate).HasDefaultValue(true);
+                entity.Property(x => x.ShowProductName).HasDefaultValue(true);
+                entity.Property(x => x.ShowPrintDate).HasDefaultValue(true);
+                entity.Property(x => x.ShowRetailRate).HasDefaultValue(true);
+                entity.Property(x => x.ShowBarcode).HasDefaultValue(true);
+                entity.Property(x => x.ShowBarcodeText).HasDefaultValue(true);
+                entity.Property(x => x.ApplyWholeSaleRateFormula).HasDefaultValue(true);
+                entity.Property(x => x.CompanyShortName).HasDefaultValue("SSBD");
+                entity.Property(x => x.WholeSaleRatePrefix).HasDefaultValue("5");
+                entity.Property(x => x.WholeSaleRateAddAmount).HasDefaultValue(500);
+            });
+
+            modelBuilder.Entity<StickerPrintFieldSetting>(entity =>
+            {
+                entity.HasIndex(x => new { x.StickerPrintSettingId, x.FieldKey }).IsUnique();
+                entity.Property(x => x.FieldKey).HasMaxLength(50).IsRequired();
+                entity.Property(x => x.Label).HasMaxLength(80).IsRequired();
+                entity.Property(x => x.FontWeight).HasMaxLength(20).IsRequired();
+                entity.Property(x => x.TextAlign).HasMaxLength(20).IsRequired();
+                entity.Property(x => x.X).HasColumnType("decimal(8,2)");
+                entity.Property(x => x.Y).HasColumnType("decimal(8,2)");
+                entity.Property(x => x.Width).HasColumnType("decimal(8,2)");
+                entity.Property(x => x.Height).HasColumnType("decimal(8,2)");
+                entity.Property(x => x.IsVisible).HasDefaultValue(true);
+                entity.HasOne(x => x.StickerPrintSetting)
+                    .WithMany(x => x.FieldSettings)
+                    .HasForeignKey(x => x.StickerPrintSettingId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<SaleVoucherDetail>(entity =>

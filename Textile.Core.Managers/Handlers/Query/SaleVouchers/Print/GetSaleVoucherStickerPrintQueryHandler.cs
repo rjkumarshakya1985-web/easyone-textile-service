@@ -4,6 +4,7 @@ using Textile.Core.Entities;
 using Textile.Core.Entities.DbEnitites;
 using Textile.Core.Entities.Models.Response.Suppliers.Print;
 using Textile.Core.Interfaces.Data;
+using Textile.Core.Interfaces.Services;
 using Textile.Core.Managers.Query.SaleVouchers.Print;
 
 
@@ -14,13 +15,16 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IStickerPrintSettingService _stickerPrintSettingService;
 
         public GetSaleVoucherStickerPrintQueryHandler(
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            IStickerPrintSettingService stickerPrintSettingService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _stickerPrintSettingService = stickerPrintSettingService ?? throw new ArgumentNullException(nameof(stickerPrintSettingService));
         }
 
         public async Task<SaleVoucherPrintResponse> Handle(
@@ -30,6 +34,7 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
             var saleVoucherRepo = _unitOfWork.Repository<SaleVoucher, int>();
             var saleVoucherDetailRepo = _unitOfWork.Repository<SaleVoucherDetail, Guid>();
             var saleVoucherPrintRepo = _unitOfWork.Repository<SaleVoucherPrintDetail, int>();
+            var stickerSetting = await _stickerPrintSettingService.GetForPrintAsync();
 
             // 1️⃣ SaleVoucher with relations
             var saleVoucher = await saleVoucherRepo.GetByIdAsync(
@@ -131,14 +136,15 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
                         .Select(_ => new StickerPrint
                         {
                             Barcode = d.Product.Barcode,
-                            WholeSaleRate = "5" + (d.WholeSaleRate + 500),
+                            WholeSaleRate = _stickerPrintSettingService.FormatWholeSaleRate(d.WholeSaleRate, stickerSetting),
                             RetailRate = d.RetailPrice.GenerateRandomPrefixedSuffixedNumber(),
                             MrpRate = d.MrpRate.ToString(".00"),
                             PurchaseRate = d.PurchaseRate,
                             SupplierCode = saleVoucher.Supplier.City.Name.Substring(0, 1) + saleVoucher.Supplier.Code,
                             Name = saleVoucher.Supplier.Name,
                             ProductName = d.Product.PrintName,
-                            PrintDateString = DateTime.Now.ToString("ddMMyyyy")
+                            PrintDateString = DateTime.Now.ToString("ddMMyyyy"),
+                            StickerSetting = stickerSetting
                         }))
                 .ToList();
 
@@ -148,7 +154,8 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
                 SaleVoucherPrint = saleVoucherPrint,
                 SupplierPrint = supplierPrint,
                 BillingDetailPrints = billingDetailPrints,
-                StickerPrints = productStickerRecords
+                StickerPrints = productStickerRecords,
+                StickerSetting = stickerSetting
             };
         }
     }

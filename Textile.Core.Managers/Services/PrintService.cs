@@ -14,14 +14,22 @@ namespace Textile.Core.Managers.Services
         private readonly TextileDbContext _context;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PrintService(IUnitOfWork unitOfWork, TextileDbContext context)
+        private readonly IStickerPrintSettingService _stickerPrintSettingService;
+
+        public PrintService(
+            IUnitOfWork unitOfWork,
+            TextileDbContext context,
+            IStickerPrintSettingService stickerPrintSettingService)
         {
 
             this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _stickerPrintSettingService = stickerPrintSettingService ?? throw new ArgumentNullException(nameof(stickerPrintSettingService));
         }
         public async Task<StickerPrint> GetStickerByProduct(Guid id, bool isSaleVoucher = false)
         {
+            var stickerSetting = await _stickerPrintSettingService.GetForPrintAsync();
+
             if (isSaleVoucher)
             {
                 var saleVoucherDetailRepo = _unitOfWork.Repository<SaleVoucherDetail, Guid>();
@@ -42,7 +50,7 @@ namespace Textile.Core.Managers.Services
                 return new StickerPrint
                 {
                     Barcode = detail.Product.Barcode,
-                    WholeSaleRate = "5" + (detail.WholeSaleRate + 500),
+                    WholeSaleRate = _stickerPrintSettingService.FormatWholeSaleRate(detail.WholeSaleRate, stickerSetting),
                     RetailRate = detail.RetailPrice
                         .GenerateRandomPrefixedSuffixedNumber(),
                     MrpRate = detail.MrpRate.ToString("0.00"),
@@ -51,7 +59,8 @@ namespace Textile.Core.Managers.Services
                                     + saleVoucher.Supplier.Code,
                     Name = saleVoucher.Supplier.Name,
                     ProductName = detail.Product.Name,
-                    PrintDateString = DateTime.UtcNow.ToString("ddMMyyyy")
+                    PrintDateString = DateTime.UtcNow.ToString("ddMMyyyy"),
+                    StickerSetting = stickerSetting
                 };
             }
             else
@@ -72,7 +81,7 @@ namespace Textile.Core.Managers.Services
                 return new StickerPrint
                 {
                     Barcode = supplierProduct.Barcode,
-                    WholeSaleRate = "5" + (supplierProduct.WholeSaleRate + 500),
+                    WholeSaleRate = _stickerPrintSettingService.FormatWholeSaleRate(supplierProduct.WholeSaleRate, stickerSetting),
                     RetailRate = supplierProduct.RetailPrice?
                         .GenerateRandomPrefixedSuffixedNumber(),
                     MrpRate = supplierProduct.MrpRate?.ToString("0.00") ?? "0.00",
@@ -81,7 +90,8 @@ namespace Textile.Core.Managers.Services
                                     + supplier.Code,
                     Name = supplier.Name,
                     ProductName = supplierProduct.Name,
-                    PrintDateString = DateTime.UtcNow.ToString("ddMMyyyy")
+                    PrintDateString = DateTime.UtcNow.ToString("ddMMyyyy"),
+                    StickerSetting = stickerSetting
                 };
 
 
