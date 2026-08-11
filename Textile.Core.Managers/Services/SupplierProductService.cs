@@ -322,6 +322,13 @@ namespace Textile.Core.Managers.Services
                         query = query.Where(x => x.HsnCode.ToLower().Contains(value));
                         break;
 
+                    case "isActive":
+                        if (bool.TryParse(value, out var isActive))
+                        {
+                            query = query.Where(x => x.IsActive == isActive);
+                        }
+                        break;
+
                
                 }
             }

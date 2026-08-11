@@ -51,6 +51,30 @@ namespace EasyOneService.Controllers
             return await _saleVoucherService.GetTableData(tableDataRequest, supplierId);
         }
 
+        [HttpPost("mobile/salevoucher-list")]
+        public async Task<TableResult<SaleVoucherMobileResponse>> GetMobileSaleVoucherList(TableDataRequest tableDataRequest)
+        {
+            Guid? supplierId = null;
+            if (CurrentUserRole == RoleEnum.Supplier)
+            {
+                supplierId = await _supplierContextService.GetSupplierIdAsync();
+            }
+
+            return await _saleVoucherService.GetMobileTableData(tableDataRequest, supplierId);
+        }
+
+        [HttpGet("mobile/{id}/products")]
+        public async Task<List<SaleVoucherMobileProductResponse>> GetMobileSaleVoucherProducts(int id)
+        {
+            Guid? supplierId = null;
+            if (CurrentUserRole == RoleEnum.Supplier)
+            {
+                supplierId = await _supplierContextService.GetSupplierIdAsync();
+            }
+
+            return await _saleVoucherService.GetMobileProductsAsync(id, supplierId);
+        }
+
         [HttpGet("{id}")]
         public async Task<SaleVoucherResponse> GetSaleVoucher(int id)
         {

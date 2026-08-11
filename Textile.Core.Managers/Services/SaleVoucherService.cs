@@ -75,6 +75,68 @@ namespace Textile.Core.Managers.Services
             };
         }
 
+        public async Task<TableResult<SaleVoucherMobileResponse>> GetMobileTableData(
+            TableDataRequest dataRequest,
+            Guid? supplierId = null)
+        {
+            var query = BuildBaseQuery();
+
+            query = ApplySupplierFilter(query, supplierId);
+            query = ApplySearch(query, dataRequest.Search);
+            query = ApplyFilters(query, dataRequest.Filters);
+            query = ApplySorting(query, dataRequest.SortField, dataRequest.SortOrder);
+
+            int total = await query.CountAsync();
+
+            var data = await ApplyPagination(query, dataRequest)
+                .Select(x => new SaleVoucherMobileResponse
+                {
+                    Id = x.Id,
+                    Date = x.Date,
+                    SupplierName = x.Supplier.Name,
+                    SupplierInvoice = x.SupplierBillNumber,
+                    CompanyName = x.Supplier.TallyLedgerName ?? x.Supplier.Name,
+                    Floor = x.Supplier.SubDepartment.Name,
+                    ParcelStatus = (ParcelStatusEnum)x.Status,
+                    StatusDate = x.SaleVoucherStatuses.OrderByDescending(s => s.Date).FirstOrDefault() != null
+                        ? x.SaleVoucherStatuses.OrderByDescending(s => s.Date).FirstOrDefault()!.Date
+                        : x.Date,
+                    TotalQuantity = x.SaleVoucherDetails.Sum(d => d.Quantity)
+                })
+                .ToListAsync();
+
+            return new TableResult<SaleVoucherMobileResponse>
+            {
+                TotalRows = total,
+                Result = data
+            };
+        }
+
+        public async Task<List<SaleVoucherMobileProductResponse>> GetMobileProductsAsync(
+            int saleVoucherId,
+            Guid? supplierId = null)
+        {
+            var query = _context.SaleVouchers
+                .Where(x => !x.IsDeleted && x.Id == saleVoucherId);
+
+            query = ApplySupplierFilter(query, supplierId);
+
+            return await query
+                .SelectMany(x => x.SaleVoucherDetails)
+                .OrderBy(d => d.Product.StockGroup!.Name)
+                .ThenBy(d => d.Product.Name)
+                .Select(d => new SaleVoucherMobileProductResponse
+                {
+                    CategoryName = d.Product.StockGroup!.Name,
+                    ProductName = d.Product.Name,
+                    Description = d.Product.PrintName,
+                    Barcode = d.Product.Barcode,
+                    Quantity = d.Quantity
+                })
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         private IQueryable<SaleVoucher> ApplyPagination(
     IQueryable<SaleVoucher> query,
     TableDataRequest request)

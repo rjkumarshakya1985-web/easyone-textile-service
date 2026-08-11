@@ -93,7 +93,7 @@ namespace Textile.Core.Managers.Handlers.Query.Tally
             {
                 Id = saleVoucher.Id,
                 CompanyName = saleVoucher.Supplier.Name,
-                Address = string.Join(", ",
+                Address = JoinAddress(
                     billingInformation.Address1,
                     billingInformation.Address2),
                 InVoiceNo = saleVoucher.SupplierBillNumber,
@@ -324,6 +324,13 @@ namespace Textile.Core.Managers.Handlers.Query.Tally
                 StockGroupResponse = stockGroupResponse,
                 StockitemResponse = stockItemResponse
             };
+        }
+
+        private static string JoinAddress(params string?[] parts)
+        {
+            return string.Join(", ", parts
+                .Select(part => part?.Trim().Trim(','))
+                .Where(part => !string.IsNullOrWhiteSpace(part)));
         }
     }
 

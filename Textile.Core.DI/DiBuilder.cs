@@ -70,6 +70,7 @@ namespace Textile.Core.DI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<IStickerPrintSettingService, StickerPrintSettingService>();
+            services.AddScoped<ISaleVoucherPrintDetailService, SaleVoucherPrintDetailService>();
             services.AddScoped<ISupplierContextService, SupplierContextService>();
             services.AddScoped<IStockGroupService, StockGroupService>();
             services.AddScoped<ISupplierProductService, SupplierProductService>();

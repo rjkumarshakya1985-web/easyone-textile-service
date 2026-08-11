@@ -78,7 +78,7 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
             {
                 Id = saleVoucher.Id,
                 CompanyName = billingInformation.CompanyName,
-                Address = string.Join(", ",
+                Address = JoinAddress(
                     billingInformation.Address1,
                     billingInformation.Address2),
                 InVoiceNo = saleVoucher.SupplierBillNumber,
@@ -157,6 +157,13 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
                 StickerPrints = productStickerRecords,
                 StickerSetting = stickerSetting
             };
+        }
+
+        private static string JoinAddress(params string?[] parts)
+        {
+            return string.Join(", ", parts
+                .Select(part => part?.Trim().Trim(','))
+                .Where(part => !string.IsNullOrWhiteSpace(part)));
         }
     }
 

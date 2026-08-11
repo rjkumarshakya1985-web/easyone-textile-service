@@ -8,6 +8,8 @@ namespace Textile.Core.Interfaces.Services
     public interface ISaleVoucherService
     {
         Task<TableResult<SaleVoucherTableResponse>> GetTableData(TableDataRequest DataRequest, Guid? supplierId = null);
+        Task<TableResult<SaleVoucherMobileResponse>> GetMobileTableData(TableDataRequest DataRequest, Guid? supplierId = null);
+        Task<List<SaleVoucherMobileProductResponse>> GetMobileProductsAsync(int saleVoucherId, Guid? supplierId = null);
         Task<IEnumerable<SaleVoucherDto>> GetAllAsync();
 
         Task<SaleVoucherDto?> GetByIdAsync(int id);
