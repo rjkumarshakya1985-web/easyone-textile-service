@@ -26,6 +26,38 @@ namespace Textile.Core.Entities.DbEnitites
 
         public decimal WholeSaleRateAddAmount { get; set; }
 
+        public bool ApplyWholeSaleRateCode { get; set; }
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode0 { get; set; } = "A";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode1 { get; set; } = "B";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode2 { get; set; } = "C";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode3 { get; set; } = "D";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode4 { get; set; } = "E";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode5 { get; set; } = "F";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode6 { get; set; } = "G";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode7 { get; set; } = "H";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode8 { get; set; } = "I";
+
+        [MaxLength(10)]
+        public string WholeSaleRateCode9 { get; set; } = "J";
+
         public ICollection<StickerPrintFieldSetting> FieldSettings { get; set; } = new List<StickerPrintFieldSetting>();
     }
 }

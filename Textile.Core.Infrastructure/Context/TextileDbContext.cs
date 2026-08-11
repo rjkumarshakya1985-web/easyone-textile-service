@@ -114,6 +114,16 @@ namespace Textile.Core.Infrastructure.Context
                 entity.Property(x => x.WholeSaleRatePrefix).HasMaxLength(20);
                 entity.Property(x => x.WholeSaleRatePostfix).HasMaxLength(20);
                 entity.Property(x => x.WholeSaleRateAddAmount).HasColumnType("decimal(18,2)");
+                entity.Property(x => x.WholeSaleRateCode0).HasMaxLength(10).IsRequired().HasDefaultValue("A");
+                entity.Property(x => x.WholeSaleRateCode1).HasMaxLength(10).IsRequired().HasDefaultValue("B");
+                entity.Property(x => x.WholeSaleRateCode2).HasMaxLength(10).IsRequired().HasDefaultValue("C");
+                entity.Property(x => x.WholeSaleRateCode3).HasMaxLength(10).IsRequired().HasDefaultValue("D");
+                entity.Property(x => x.WholeSaleRateCode4).HasMaxLength(10).IsRequired().HasDefaultValue("E");
+                entity.Property(x => x.WholeSaleRateCode5).HasMaxLength(10).IsRequired().HasDefaultValue("F");
+                entity.Property(x => x.WholeSaleRateCode6).HasMaxLength(10).IsRequired().HasDefaultValue("G");
+                entity.Property(x => x.WholeSaleRateCode7).HasMaxLength(10).IsRequired().HasDefaultValue("H");
+                entity.Property(x => x.WholeSaleRateCode8).HasMaxLength(10).IsRequired().HasDefaultValue("I");
+                entity.Property(x => x.WholeSaleRateCode9).HasMaxLength(10).IsRequired().HasDefaultValue("J");
                 entity.Property(x => x.ShowSupplierCode).HasDefaultValue(true);
                 entity.Property(x => x.ShowCompanyShortName).HasDefaultValue(true);
                 entity.Property(x => x.ShowWholeSaleRate).HasDefaultValue(true);
@@ -123,6 +133,7 @@ namespace Textile.Core.Infrastructure.Context
                 entity.Property(x => x.ShowBarcode).HasDefaultValue(true);
                 entity.Property(x => x.ShowBarcodeText).HasDefaultValue(true);
                 entity.Property(x => x.ApplyWholeSaleRateFormula).HasDefaultValue(true);
+                entity.Property(x => x.ApplyWholeSaleRateCode).HasDefaultValue(false);
                 entity.Property(x => x.CompanyShortName).HasDefaultValue("SSBD");
                 entity.Property(x => x.WholeSaleRatePrefix).HasDefaultValue("5");
                 entity.Property(x => x.WholeSaleRateAddAmount).HasDefaultValue(500);

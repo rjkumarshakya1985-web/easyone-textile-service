@@ -40,11 +40,12 @@ namespace Textile.Core.Managers.Services
                 .FirstOrDefaultAsync(x => x.Id == currentUserId);
 
             if (currentUser == null ||
-                currentUser.RoleId != (int)RoleEnum.SuperAdmin ||
-                !currentUser.IsDeveloper)
+                currentUser.RoleId != (int)RoleEnum.SuperAdmin)
             {
-                throw new UnauthorizedAccessException("Only developer admin can update sticker settings.");
+                throw new UnauthorizedAccessException("Only admin can update sticker settings.");
             }
+
+            ValidateWholeSaleRateCode(request);
 
             var setting = await GetOrCreateAsync();
 
@@ -61,6 +62,17 @@ namespace Textile.Core.Managers.Services
             setting.WholeSaleRatePrefix = NormalizeOptional(request.WholeSaleRatePrefix);
             setting.WholeSaleRatePostfix = NormalizeOptional(request.WholeSaleRatePostfix);
             setting.WholeSaleRateAddAmount = request.WholeSaleRateAddAmount;
+            setting.ApplyWholeSaleRateCode = request.ApplyWholeSaleRateCode;
+            setting.WholeSaleRateCode0 = NormalizeRateCode(request.WholeSaleRateCode0, "A");
+            setting.WholeSaleRateCode1 = NormalizeRateCode(request.WholeSaleRateCode1, "B");
+            setting.WholeSaleRateCode2 = NormalizeRateCode(request.WholeSaleRateCode2, "C");
+            setting.WholeSaleRateCode3 = NormalizeRateCode(request.WholeSaleRateCode3, "D");
+            setting.WholeSaleRateCode4 = NormalizeRateCode(request.WholeSaleRateCode4, "E");
+            setting.WholeSaleRateCode5 = NormalizeRateCode(request.WholeSaleRateCode5, "F");
+            setting.WholeSaleRateCode6 = NormalizeRateCode(request.WholeSaleRateCode6, "G");
+            setting.WholeSaleRateCode7 = NormalizeRateCode(request.WholeSaleRateCode7, "H");
+            setting.WholeSaleRateCode8 = NormalizeRateCode(request.WholeSaleRateCode8, "I");
+            setting.WholeSaleRateCode9 = NormalizeRateCode(request.WholeSaleRateCode9, "J");
             SyncFieldSettings(setting, request.FieldSettings);
 
             await _context.SaveChangesAsync();
@@ -73,7 +85,8 @@ namespace Textile.Core.Managers.Services
                 ? wholeSaleRate + setting.WholeSaleRateAddAmount
                 : wholeSaleRate;
 
-            return $"{setting.WholeSaleRatePrefix}{value:0.##}{setting.WholeSaleRatePostfix}";
+            var formatted = $"{setting.WholeSaleRatePrefix}{value:0.##}{setting.WholeSaleRatePostfix}";
+            return setting.ApplyWholeSaleRateCode ? ApplyRateCode(formatted, setting) : formatted;
         }
 
         private async Task<StickerPrintSetting> GetOrCreateAsync()
@@ -112,6 +125,17 @@ namespace Textile.Core.Managers.Services
                 WholeSaleRatePrefix = "5",
                 WholeSaleRatePostfix = null,
                 WholeSaleRateAddAmount = 500,
+                ApplyWholeSaleRateCode = false,
+                WholeSaleRateCode0 = "A",
+                WholeSaleRateCode1 = "B",
+                WholeSaleRateCode2 = "C",
+                WholeSaleRateCode3 = "D",
+                WholeSaleRateCode4 = "E",
+                WholeSaleRateCode5 = "F",
+                WholeSaleRateCode6 = "G",
+                WholeSaleRateCode7 = "H",
+                WholeSaleRateCode8 = "I",
+                WholeSaleRateCode9 = "J",
                 FieldSettings = CreateDefaultFieldSettings()
             };
         }
@@ -138,6 +162,17 @@ namespace Textile.Core.Managers.Services
                 WholeSaleRatePrefix = setting.WholeSaleRatePrefix,
                 WholeSaleRatePostfix = setting.WholeSaleRatePostfix,
                 WholeSaleRateAddAmount = setting.WholeSaleRateAddAmount,
+                ApplyWholeSaleRateCode = setting.ApplyWholeSaleRateCode,
+                WholeSaleRateCode0 = setting.WholeSaleRateCode0,
+                WholeSaleRateCode1 = setting.WholeSaleRateCode1,
+                WholeSaleRateCode2 = setting.WholeSaleRateCode2,
+                WholeSaleRateCode3 = setting.WholeSaleRateCode3,
+                WholeSaleRateCode4 = setting.WholeSaleRateCode4,
+                WholeSaleRateCode5 = setting.WholeSaleRateCode5,
+                WholeSaleRateCode6 = setting.WholeSaleRateCode6,
+                WholeSaleRateCode7 = setting.WholeSaleRateCode7,
+                WholeSaleRateCode8 = setting.WholeSaleRateCode8,
+                WholeSaleRateCode9 = setting.WholeSaleRateCode9,
                 FieldSettings = setting.FieldSettings
                     .OrderBy(x => x.SortOrder)
                     .Select(x => new StickerPrintFieldSettingResponse
@@ -260,6 +295,57 @@ namespace Textile.Core.Managers.Services
         private static string? NormalizeOptional(string? value)
         {
             return string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+        }
+
+        private static void ValidateWholeSaleRateCode(StickerPrintSettingRequest request)
+        {
+            if (!request.ApplyWholeSaleRateCode)
+            {
+                return;
+            }
+
+            var values = new[]
+            {
+                request.WholeSaleRateCode0,
+                request.WholeSaleRateCode1,
+                request.WholeSaleRateCode2,
+                request.WholeSaleRateCode3,
+                request.WholeSaleRateCode4,
+                request.WholeSaleRateCode5,
+                request.WholeSaleRateCode6,
+                request.WholeSaleRateCode7,
+                request.WholeSaleRateCode8,
+                request.WholeSaleRateCode9
+            };
+
+            if (values.Any(string.IsNullOrWhiteSpace))
+            {
+                throw new InvalidOperationException("Wholesale rate code is required for every digit.");
+            }
+        }
+
+        private static string NormalizeRateCode(string? value, string fallback)
+        {
+            return NormalizeOptional(value) ?? fallback;
+        }
+
+        private static string ApplyRateCode(string value, StickerPrintSettingResponse setting)
+        {
+            var map = new Dictionary<char, string>
+            {
+                ['0'] = setting.WholeSaleRateCode0,
+                ['1'] = setting.WholeSaleRateCode1,
+                ['2'] = setting.WholeSaleRateCode2,
+                ['3'] = setting.WholeSaleRateCode3,
+                ['4'] = setting.WholeSaleRateCode4,
+                ['5'] = setting.WholeSaleRateCode5,
+                ['6'] = setting.WholeSaleRateCode6,
+                ['7'] = setting.WholeSaleRateCode7,
+                ['8'] = setting.WholeSaleRateCode8,
+                ['9'] = setting.WholeSaleRateCode9
+            };
+
+            return string.Concat(value.Select(character => map.TryGetValue(character, out var code) ? code : character.ToString()));
         }
     }
 }

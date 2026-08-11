@@ -15,6 +15,17 @@ namespace Textile.Core.Entities.Models.Requests.StickerPrint
         public string? WholeSaleRatePrefix { get; set; }
         public string? WholeSaleRatePostfix { get; set; }
         public decimal WholeSaleRateAddAmount { get; set; }
+        public bool ApplyWholeSaleRateCode { get; set; }
+        public string WholeSaleRateCode0 { get; set; } = "A";
+        public string WholeSaleRateCode1 { get; set; } = "B";
+        public string WholeSaleRateCode2 { get; set; } = "C";
+        public string WholeSaleRateCode3 { get; set; } = "D";
+        public string WholeSaleRateCode4 { get; set; } = "E";
+        public string WholeSaleRateCode5 { get; set; } = "F";
+        public string WholeSaleRateCode6 { get; set; } = "G";
+        public string WholeSaleRateCode7 { get; set; } = "H";
+        public string WholeSaleRateCode8 { get; set; } = "I";
+        public string WholeSaleRateCode9 { get; set; } = "J";
         public List<StickerPrintFieldSettingRequest> FieldSettings { get; set; } = new();
     }
 
