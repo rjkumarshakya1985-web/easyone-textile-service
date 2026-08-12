@@ -12,6 +12,13 @@ BEGIN
             CONSTRAINT DF_StickerPrintSettings_WholeSaleRateCode0 DEFAULT ('A');
 END
 
+IF COL_LENGTH('dbo.StickerPrintSettings', 'WholeSaleRateCodeDigitCount') IS NULL
+BEGIN
+    ALTER TABLE dbo.StickerPrintSettings
+        ADD WholeSaleRateCodeDigitCount int NOT NULL
+            CONSTRAINT DF_StickerPrintSettings_WholeSaleRateCodeDigitCount DEFAULT (2);
+END
+
 IF COL_LENGTH('dbo.StickerPrintSettings', 'WholeSaleRateCode1') IS NULL
 BEGIN
     ALTER TABLE dbo.StickerPrintSettings

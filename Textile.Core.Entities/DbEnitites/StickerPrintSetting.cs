@@ -28,6 +28,8 @@ namespace Textile.Core.Entities.DbEnitites
 
         public bool ApplyWholeSaleRateCode { get; set; }
 
+        public int WholeSaleRateCodeDigitCount { get; set; }
+
         [MaxLength(10)]
         public string WholeSaleRateCode0 { get; set; } = "A";
 

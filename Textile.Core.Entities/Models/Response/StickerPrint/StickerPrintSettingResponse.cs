@@ -16,6 +16,7 @@ namespace Textile.Core.Entities.Models.Response.StickerPrint
         public string? WholeSaleRatePostfix { get; set; }
         public decimal WholeSaleRateAddAmount { get; set; }
         public bool ApplyWholeSaleRateCode { get; set; }
+        public int WholeSaleRateCodeDigitCount { get; set; }
         public string WholeSaleRateCode0 { get; set; } = "A";
         public string WholeSaleRateCode1 { get; set; } = "B";
         public string WholeSaleRateCode2 { get; set; } = "C";

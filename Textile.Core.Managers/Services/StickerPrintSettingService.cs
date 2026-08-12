@@ -63,6 +63,7 @@ namespace Textile.Core.Managers.Services
             setting.WholeSaleRatePostfix = NormalizeOptional(request.WholeSaleRatePostfix);
             setting.WholeSaleRateAddAmount = request.WholeSaleRateAddAmount;
             setting.ApplyWholeSaleRateCode = request.ApplyWholeSaleRateCode;
+            setting.WholeSaleRateCodeDigitCount = Math.Clamp(request.WholeSaleRateCodeDigitCount, 1, 20);
             setting.WholeSaleRateCode0 = NormalizeRateCode(request.WholeSaleRateCode0, "A");
             setting.WholeSaleRateCode1 = NormalizeRateCode(request.WholeSaleRateCode1, "B");
             setting.WholeSaleRateCode2 = NormalizeRateCode(request.WholeSaleRateCode2, "C");
@@ -126,6 +127,7 @@ namespace Textile.Core.Managers.Services
                 WholeSaleRatePostfix = null,
                 WholeSaleRateAddAmount = 500,
                 ApplyWholeSaleRateCode = false,
+                WholeSaleRateCodeDigitCount = 2,
                 WholeSaleRateCode0 = "A",
                 WholeSaleRateCode1 = "B",
                 WholeSaleRateCode2 = "C",
@@ -163,6 +165,7 @@ namespace Textile.Core.Managers.Services
                 WholeSaleRatePostfix = setting.WholeSaleRatePostfix,
                 WholeSaleRateAddAmount = setting.WholeSaleRateAddAmount,
                 ApplyWholeSaleRateCode = setting.ApplyWholeSaleRateCode,
+                WholeSaleRateCodeDigitCount = setting.WholeSaleRateCodeDigitCount <= 0 ? 2 : setting.WholeSaleRateCodeDigitCount,
                 WholeSaleRateCode0 = setting.WholeSaleRateCode0,
                 WholeSaleRateCode1 = setting.WholeSaleRateCode1,
                 WholeSaleRateCode2 = setting.WholeSaleRateCode2,
@@ -345,7 +348,19 @@ namespace Textile.Core.Managers.Services
                 ['9'] = setting.WholeSaleRateCode9
             };
 
-            return string.Concat(value.Select(character => map.TryGetValue(character, out var code) ? code : character.ToString()));
+            var convertedDigitCount = 0;
+            var maxDigitCount = Math.Clamp(setting.WholeSaleRateCodeDigitCount, 1, 20);
+
+            return string.Concat(value.Select(character =>
+            {
+                if (!map.TryGetValue(character, out var code) || convertedDigitCount >= maxDigitCount)
+                {
+                    return character.ToString();
+                }
+
+                convertedDigitCount++;
+                return code;
+            }));
         }
     }
 }

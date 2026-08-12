@@ -114,6 +114,7 @@ namespace Textile.Core.Infrastructure.Context
                 entity.Property(x => x.WholeSaleRatePrefix).HasMaxLength(20);
                 entity.Property(x => x.WholeSaleRatePostfix).HasMaxLength(20);
                 entity.Property(x => x.WholeSaleRateAddAmount).HasColumnType("decimal(18,2)");
+                entity.Property(x => x.WholeSaleRateCodeDigitCount).HasDefaultValue(2);
                 entity.Property(x => x.WholeSaleRateCode0).HasMaxLength(10).IsRequired().HasDefaultValue("A");
                 entity.Property(x => x.WholeSaleRateCode1).HasMaxLength(10).IsRequired().HasDefaultValue("B");
                 entity.Property(x => x.WholeSaleRateCode2).HasMaxLength(10).IsRequired().HasDefaultValue("C");
