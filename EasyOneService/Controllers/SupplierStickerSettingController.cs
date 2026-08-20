@@ -43,10 +43,7 @@ namespace EasyOneService.Controllers
         [HttpGet("demo")]
         public async Task<StickerPrintSettingResponse> GetDemoSetting()
         {
-            var supplierId = await _supplierContextService.GetSupplierIdAsync();
-            var setting = await _stickerPrintSettingService.GetForPrintAsync();
-            await _supplierStickerSettingService.ApplySizeAsync(supplierId, setting);
-            return setting;
+            return await _stickerPrintSettingService.GetForPrintAsync();
         }
     }
 }
