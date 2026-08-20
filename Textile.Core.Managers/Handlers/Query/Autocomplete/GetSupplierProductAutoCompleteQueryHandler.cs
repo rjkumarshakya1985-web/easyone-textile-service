@@ -26,7 +26,8 @@ namespace Textile.Core.Managers.Handlers.Query.Autocomplete
             var query = _context.SupplierProductViews
                         .AsNoTracking()
                         .Where(x =>
-                         x.SupplierId == request.SupplierId
+                         x.SupplierId == request.SupplierId &&
+                         !x.IsDeleted
                          );
 
             if (!string.IsNullOrWhiteSpace(search))
