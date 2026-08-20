@@ -37,6 +37,7 @@ namespace Textile.Core.Infrastructure.Context
         public DbSet<AdminMenuSetting> AdminMenuSettings { get; set; }
         public DbSet<StickerPrintSetting> StickerPrintSettings { get; set; }
         public DbSet<StickerPrintFieldSetting> StickerPrintFieldSettings { get; set; }
+        public DbSet<SupplierStickerSetting> SupplierStickerSettings { get; set; }
 
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
@@ -155,6 +156,18 @@ namespace Textile.Core.Infrastructure.Context
                 entity.HasOne(x => x.StickerPrintSetting)
                     .WithMany(x => x.FieldSettings)
                     .HasForeignKey(x => x.StickerPrintSettingId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<SupplierStickerSetting>(entity =>
+            {
+                entity.HasIndex(x => x.SupplierId).IsUnique();
+                entity.Property(x => x.StickerWidthMm).HasColumnType("decimal(8,2)");
+                entity.Property(x => x.StickerHeightMm).HasColumnType("decimal(8,2)");
+                entity.Property(x => x.UpdatedOn).HasDefaultValueSql("SYSUTCDATETIME()");
+                entity.HasOne(x => x.Supplier)
+                    .WithMany()
+                    .HasForeignKey(x => x.SupplierId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

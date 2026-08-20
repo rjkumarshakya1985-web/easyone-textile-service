@@ -27,6 +27,9 @@ namespace Textile.Core.Entities.Models.Response.StickerPrint
         public string WholeSaleRateCode7 { get; set; } = "H";
         public string WholeSaleRateCode8 { get; set; } = "I";
         public string WholeSaleRateCode9 { get; set; } = "J";
+        public decimal? StickerWidthMm { get; set; }
+        public decimal? StickerHeightMm { get; set; }
+        public bool HasCustomSize { get; set; }
         public List<StickerPrintFieldSettingResponse> FieldSettings { get; set; } = new();
     }
 

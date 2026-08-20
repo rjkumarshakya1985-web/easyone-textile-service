@@ -15,16 +15,19 @@ namespace Textile.Core.Managers.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IStickerPrintSettingService _stickerPrintSettingService;
+        private readonly ISupplierStickerSettingService _supplierStickerSettingService;
 
         public PrintService(
             IUnitOfWork unitOfWork,
             TextileDbContext context,
-            IStickerPrintSettingService stickerPrintSettingService)
+            IStickerPrintSettingService stickerPrintSettingService,
+            ISupplierStickerSettingService supplierStickerSettingService)
         {
 
             this._unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _stickerPrintSettingService = stickerPrintSettingService ?? throw new ArgumentNullException(nameof(stickerPrintSettingService));
+            _supplierStickerSettingService = supplierStickerSettingService ?? throw new ArgumentNullException(nameof(supplierStickerSettingService));
         }
         public async Task<StickerPrint> GetStickerByProduct(Guid id, bool isSaleVoucher = false)
         {
@@ -46,6 +49,8 @@ namespace Textile.Core.Managers.Services
                     detail.SaleVoucherId,
                     x => x.Transport,
                     x => x.Supplier.City);
+
+                await _supplierStickerSettingService.ApplySizeAsync(saleVoucher.SupplierId, stickerSetting);
 
                 return new StickerPrint
                 {
@@ -77,6 +82,8 @@ namespace Textile.Core.Managers.Services
                 var supplier = await supplierRepo.GetByIdAsync(
                     supplierProduct.SupplierId,
                     x => x.City.State);
+
+                await _supplierStickerSettingService.ApplySizeAsync(supplierProduct.SupplierId, stickerSetting);
 
                 return new StickerPrint
                 {

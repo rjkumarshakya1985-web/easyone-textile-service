@@ -16,15 +16,18 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IStickerPrintSettingService _stickerPrintSettingService;
+        private readonly ISupplierStickerSettingService _supplierStickerSettingService;
 
         public GetSaleVoucherStickerPrintQueryHandler(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IStickerPrintSettingService stickerPrintSettingService)
+            IStickerPrintSettingService stickerPrintSettingService,
+            ISupplierStickerSettingService supplierStickerSettingService)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _stickerPrintSettingService = stickerPrintSettingService ?? throw new ArgumentNullException(nameof(stickerPrintSettingService));
+            _supplierStickerSettingService = supplierStickerSettingService ?? throw new ArgumentNullException(nameof(supplierStickerSettingService));
         }
 
         public async Task<SaleVoucherPrintResponse> Handle(
@@ -45,6 +48,8 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
 
             if (saleVoucher is null)
                 throw new KeyNotFoundException($"SaleVoucher not found. Id: {request.SaleVoucherId}");
+
+            await _supplierStickerSettingService.ApplySizeAsync(saleVoucher.SupplierId, stickerSetting);
 
             // 2️⃣ Details with Product (materialize once)
             var saleVoucherDetails = (await saleVoucherDetailRepo.GetAllAsync(
