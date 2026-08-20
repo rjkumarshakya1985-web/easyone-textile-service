@@ -75,12 +75,25 @@ namespace Textile.Core.Managers.Services
 
             response.InTransitParcelCount = await _context.SaleVouchers
                 .Where(x => x.SupplierId == supplierId &&
-                            x.Status == (int)ParcelStatusEnum.InTransit)
+                            x.Status == (int)ParcelStatusEnum.InTransit &&
+                            !x.IsDeleted)
                 .CountAsync();
 
             response.TransportParcelCount = await _context.SaleVouchers
                 .Where(x => x.SupplierId == supplierId &&
                             x.Status == (int)ParcelStatusEnum.Transport &&
+                            !x.IsDeleted)
+                .CountAsync();
+
+            response.AtLocationParcelCount = await _context.SaleVouchers
+                .Where(x => x.SupplierId == supplierId &&
+                            x.Status == (int)ParcelStatusEnum.PackedAtLocation &&
+                            !x.IsDeleted)
+                .CountAsync();
+
+            response.OpenParcelCount = await _context.SaleVouchers
+                .Where(x => x.SupplierId == supplierId &&
+                            x.Status == (int)ParcelStatusEnum.Opened &&
                             !x.IsDeleted)
                 .CountAsync();
 
@@ -90,6 +103,22 @@ namespace Textile.Core.Managers.Services
 
             response.LatestSaleVouchers = await _context.SaleVouchers.Include(x => x.SaleVoucherDetails)
                 .Where(x => x.SupplierId == supplierId && !x.IsDeleted)
+                .OrderByDescending(x => x.Id)
+                .Select(x => new DashboardParcel
+                {
+                    SaleVoucherId = x.Id,
+                    Date = x.Date,
+                    TransportName = x.Transport.Name,
+                    ProductQuantity = x.SaleVoucherDetails.Count,
+                    Status = x.Status
+                })
+                .Take(3)
+                .ToListAsync();
+
+            response.LatestOpenSaleVouchers = await _context.SaleVouchers.Include(x => x.SaleVoucherDetails)
+                .Where(x => x.SupplierId == supplierId &&
+                            x.Status == (int)ParcelStatusEnum.Opened &&
+                            !x.IsDeleted)
                 .OrderByDescending(x => x.Id)
                 .Select(x => new DashboardParcel
                 {
