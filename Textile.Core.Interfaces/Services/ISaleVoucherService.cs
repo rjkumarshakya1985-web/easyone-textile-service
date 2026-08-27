@@ -18,6 +18,7 @@ namespace Textile.Core.Interfaces.Services
         Task<SaleVoucherDto> IsExport(int id);
 
         Task<bool> SaveLR(LrRequest request, Guid userId, string userName);
+        Task<bool> ChangeStatusAsync(ChangeSaleVoucherStatusRequest request, Guid userId, string userName);
         Task<IEnumerable<SaleVoucherDto>> GetAllExportAsync();
     }
 }

@@ -359,5 +359,61 @@ namespace Textile.Core.Managers.Services
 
             return true;
         }
+
+        public async Task<bool> ChangeStatusAsync(ChangeSaleVoucherStatusRequest request, Guid userId, string userName)
+        {
+            var saleVoucherRepo = _unitOfWork.Repository<SaleVoucher, int>();
+            var saleVoucherStatusRepo = _unitOfWork.Repository<SaleVoucherStatus, Guid>();
+
+            var voucher = await saleVoucherRepo.GetSingleAsync(x => !x.IsDeleted && x.Id == request.SaleVoucherId);
+
+            if (voucher == null)
+                throw new Exception("Sale voucher not found.");
+
+            if (!CanChangeFromStatus(voucher.Status))
+                throw new InvalidOperationException("Status cannot be changed after Opened, TallySynced or Cancelled.");
+
+            if (!IsAllowedManualStatus(request.Status))
+                throw new InvalidOperationException("Status can be changed only to In Transit, Transport, Packed at Location, Opened or Cancelled.");
+
+            if (voucher.Status == request.Status)
+                return true;
+
+            voucher.Status = request.Status;
+            voucher.ModifiedBy = userId;
+            voucher.ModifiedByUserName = userName;
+            voucher.ModifiedOn = DateTime.UtcNow;
+
+            await saleVoucherRepo.UpdateAsync(voucher);
+
+            await saleVoucherStatusRepo.AddAsync(new SaleVoucherStatus
+            {
+                SaleVoucherId = voucher.Id,
+                Status = request.Status,
+                Reasons = request.Reason,
+                Date = DateTime.UtcNow,
+                CreatedBy = userId,
+                CreatedByUserName = userName,
+                CreatedOn = DateTime.UtcNow
+            });
+
+            return true;
+        }
+
+        private static bool CanChangeFromStatus(int status)
+        {
+            return status != (int)ParcelStatusEnum.Opened &&
+                status != (int)ParcelStatusEnum.TallySynced &&
+                status != (int)ParcelStatusEnum.Cancelled;
+        }
+
+        private static bool IsAllowedManualStatus(int status)
+        {
+            return status == (int)ParcelStatusEnum.InTransit ||
+                status == (int)ParcelStatusEnum.Transport ||
+                status == (int)ParcelStatusEnum.PackedAtLocation ||
+                status == (int)ParcelStatusEnum.Opened ||
+                status == (int)ParcelStatusEnum.Cancelled;
+        }
     }
 }

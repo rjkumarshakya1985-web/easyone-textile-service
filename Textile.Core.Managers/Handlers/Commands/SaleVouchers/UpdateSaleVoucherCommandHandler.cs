@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Textile.Core.Entities.DbEnitites;
+using Textile.Core.Entities.Enums;
 using Textile.Core.Infrastructure.Context;
 using Textile.Core.Infrastructure.Helpers;
 using Textile.Core.Interfaces.Data;
@@ -30,6 +31,7 @@ namespace Textile.Core.Managers.Handlers.Commands.SaleVouchers
 
             var saleVoucherRepo = _unitOfWork.Repository<SaleVoucher, int>();
             var saleVoucherDetailRepo = _unitOfWork.Repository<SaleVoucherDetail, Guid>();
+            var saleVoucherStatusRepo = _unitOfWork.Repository<SaleVoucherStatus, Guid>();
             var supplierRepo = _unitOfWork.Repository<Supplier, Guid>();
             var transportRepo = _unitOfWork.Repository<Transport, int>();
             var productRepo = _unitOfWork.Repository<SupplierProduct, Guid>();
@@ -56,6 +58,21 @@ namespace Textile.Core.Managers.Handlers.Commands.SaleVouchers
                 var saleVoucher = await saleVoucherRepo.GetByIdAsync(request.Id.Value)
                                     ?? throw new Exception("SaleVoucher not found");
 
+                var hasStatusChanged = saleVoucher.Status != request.Status;
+
+                if (hasStatusChanged)
+                {
+                    if (!CanChangeFromStatus(saleVoucher.Status))
+                    {
+                        throw new InvalidOperationException("Status cannot be changed after Opened, TallySynced or Cancelled.");
+                    }
+
+                    if (!IsAllowedUpdateStatus(request.Status))
+                    {
+                        throw new InvalidOperationException("Status can be changed only to In Transit, Transport, Packed at Location, Opened or Cancelled.");
+                    }
+                }
+
                 // ---------------------------
                 // Update fields
                 // ---------------------------
@@ -80,6 +97,7 @@ namespace Textile.Core.Managers.Handlers.Commands.SaleVouchers
               
                 saleVoucher.NumberOfParcel = request.NumberOfParcel;
                 saleVoucher.SupplierBillNumber = request.SupplierBillNumber;
+                saleVoucher.Status = request.Status;
                 saleVoucher.Remarks = request.Remarks;
                 saleVoucher.Date = finalDateTime;
                 saleVoucher.ModifiedBy = command.CurrentUserId;
@@ -88,6 +106,19 @@ namespace Textile.Core.Managers.Handlers.Commands.SaleVouchers
                 saleVoucher.ModifiedOn = DateTime.UtcNow;
 
                 await saleVoucherRepo.UpdateAsync(saleVoucher);
+
+                if (hasStatusChanged)
+                {
+                    await saleVoucherStatusRepo.AddAsync(new SaleVoucherStatus
+                    {
+                        SaleVoucherId = saleVoucher.Id,
+                        Status = request.Status,
+                        Date = DateTime.UtcNow,
+                        CreatedBy = command.CurrentUserId,
+                        CreatedByUserName = command.CurrentUserName,
+                        CreatedOn = DateTime.UtcNow
+                    });
+                }
 
                 // ---------------------------
                 // Update SaleVoucherDetails
@@ -148,6 +179,22 @@ namespace Textile.Core.Managers.Handlers.Commands.SaleVouchers
                 await _unitOfWork.RollbackTranscationAsync();
                 throw;
             }
+        }
+
+        private static bool CanChangeFromStatus(int status)
+        {
+            return status != (int)ParcelStatusEnum.Opened &&
+                status != (int)ParcelStatusEnum.TallySynced &&
+                status != (int)ParcelStatusEnum.Cancelled;
+        }
+
+        private static bool IsAllowedUpdateStatus(int status)
+        {
+            return status == (int)ParcelStatusEnum.InTransit ||
+                status == (int)ParcelStatusEnum.Transport ||
+                status == (int)ParcelStatusEnum.PackedAtLocation ||
+                status == (int)ParcelStatusEnum.Opened ||
+                status == (int)ParcelStatusEnum.Cancelled;
         }
     }
 

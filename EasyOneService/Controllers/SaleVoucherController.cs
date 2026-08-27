@@ -142,5 +142,12 @@ namespace EasyOneService.Controllers
             
             return await _saleVoucherService.SaveLR(request, CurrentUserId, CurrentUserName);
         }
+
+        [Authorize(Roles = "SuperAdmin")]
+        [HttpPost("change-status")]
+        public async Task<bool> ChangeStatus(ChangeSaleVoucherStatusRequest request)
+        {
+            return await _saleVoucherService.ChangeStatusAsync(request, CurrentUserId, CurrentUserName);
+        }
     }
 }
