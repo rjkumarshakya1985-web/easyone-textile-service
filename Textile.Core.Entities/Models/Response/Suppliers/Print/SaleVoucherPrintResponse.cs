@@ -39,6 +39,7 @@ namespace Textile.Core.Entities.Models.Response.Suppliers.Print
         public string HsnCode { get; set; }
         public int Qty { get; set; }
         public decimal PurchasePrice { get; set; }
+        public decimal WholeSalePrice { get; set; }
         public decimal Gst { get; set; }
         public decimal Total { get; set; }
         public decimal DiscountAmount { get; set; }

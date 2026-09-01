@@ -123,6 +123,7 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
                     HsnCode = d.Product.HsnCode,
                     Qty = d.Quantity,
                     PurchasePrice = d.PurchaseRate,
+                    WholeSalePrice = d.WholeSaleRate,
                     Gst = d.Discount,
                     Total = lineAmount,
                     DiscountAmount = lineAmount - discountAmount,
