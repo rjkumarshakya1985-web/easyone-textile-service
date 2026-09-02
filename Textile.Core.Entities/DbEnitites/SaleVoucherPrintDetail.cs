@@ -7,5 +7,6 @@
         public string? Address2 { get; set; }
         public string? Description { get; set; }
         public string? GstIn { get; set; }
+        public string? Phone { get; set; }
     }
 }

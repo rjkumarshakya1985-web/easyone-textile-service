@@ -91,7 +91,8 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
                 SupplierBillNumber = saleVoucher.SupplierBillNumber,
                 Date = saleVoucher.Date,
                 GstIn = billingInformation.GstIn,
-                Discount = saleVoucher.Discount
+                Discount = saleVoucher.Discount,
+                Phone = billingInformation.Phone
 
 
             };
