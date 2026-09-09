@@ -46,6 +46,7 @@ namespace Textile.Core.Managers.Services
             detail.Address2 = NormalizeOptional(request.Address2);
             detail.Description = NormalizeOptional(request.Description);
             detail.GstIn = NormalizeOptional(request.GstIn);
+            detail.Phone=NormalizeOptional(request.Phone);
 
             await _context.SaveChangesAsync();
             return true;
@@ -74,7 +75,8 @@ namespace Textile.Core.Managers.Services
                 Address1 = detail.Address1,
                 Address2 = detail.Address2,
                 Description = detail.Description,
-                GstIn = detail.GstIn
+                GstIn = detail.GstIn,
+                Phone=detail.Phone
             };
         }
 

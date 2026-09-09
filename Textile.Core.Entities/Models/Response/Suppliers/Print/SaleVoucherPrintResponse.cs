@@ -22,6 +22,7 @@ namespace Textile.Core.Entities.Models.Response.Suppliers.Print
         public decimal Discount { get; set; }
         public DateTime Date { get; set; }
         public string GstIn { get; set; }
+        public string Phone { get; set; }
     }
 
     public class SupplierPrint
