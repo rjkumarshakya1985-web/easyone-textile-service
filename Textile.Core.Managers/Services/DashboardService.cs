@@ -39,6 +39,7 @@ namespace Textile.Core.Managers.Services
                 {
                     SaleVoucherId = x.Id,
                     Date = x.Date,
+                    SupplierName = x.Supplier.Name,
                     TransportName = x.Transport.Name,
                     ProductQuantity = x.SaleVoucherDetails.Count,
                     Status = x.Status
@@ -54,7 +55,23 @@ namespace Textile.Core.Managers.Services
                 {
                     SaleVoucherId = x.Id,
                     Date = x.Date,
+                    SupplierName = x.Supplier.Name,
                     TransportName = x.Transport.Name,
+                    ProductQuantity = x.SaleVoucherDetails.Count,
+                    Status = x.Status
+                })
+                .Take(5)
+                .ToListAsync();
+
+            response.OpenLatestSaleVouchers = await _context.SaleVouchers
+                .Where(x => !x.IsDeleted && x.Status == (int)ParcelStatusEnum.Opened)
+                .OrderByDescending(x => x.Id)
+                .Select(x => new DashboardParcel
+                {
+                    SaleVoucherId = x.Id,
+                    Date = x.Date,
+                    SupplierName = x.Supplier.Name,
+                    TransportName = x.Transport != null ? x.Transport.Name : string.Empty,
                     ProductQuantity = x.SaleVoucherDetails.Count,
                     Status = x.Status
                 })
@@ -108,6 +125,7 @@ namespace Textile.Core.Managers.Services
                 {
                     SaleVoucherId = x.Id,
                     Date = x.Date,
+                    SupplierName = x.Supplier.Name,
                     TransportName = x.Transport.Name,
                     ProductQuantity = x.SaleVoucherDetails.Count,
                     Status = x.Status
@@ -124,6 +142,7 @@ namespace Textile.Core.Managers.Services
                 {
                     SaleVoucherId = x.Id,
                     Date = x.Date,
+                    SupplierName = x.Supplier.Name,
                     TransportName = x.Transport.Name,
                     ProductQuantity = x.SaleVoucherDetails.Count,
                     Status = x.Status

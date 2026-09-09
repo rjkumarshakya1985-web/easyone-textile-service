@@ -11,5 +11,6 @@
 
         public List<DashboardParcel> InTransitLatestSaleVouchers { get; set; }
         public List<DashboardParcel> InHouseLatestSaleVouchers { get; set; }
+        public List<DashboardParcel> OpenLatestSaleVouchers { get; set; }
     }
 }

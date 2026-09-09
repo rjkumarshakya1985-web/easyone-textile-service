@@ -4,6 +4,7 @@
     {
         public int SaleVoucherId { get; set; }
         public DateTime Date { get; set; }
+        public string SupplierName { get; set; }
         public string TransportName { get; set; }
         public int ProductQuantity { get; set; }
 
