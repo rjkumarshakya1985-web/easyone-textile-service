@@ -75,7 +75,7 @@ namespace Textile.Core.Managers.Services
                 Alias = product.Alias,
                 PrintName = product.PrintName,
                 HsnCode = product.HsnCode,
-                Barcode = await FetchNextBarcodeNumber(),
+                Barcode = product.Barcode,
                 GstApplicable = product.GstApplicable,
                 GSTNature = product.GSTNature,
                 GSTTaxability = product.GSTTaxability,
@@ -170,7 +170,6 @@ namespace Textile.Core.Managers.Services
             product.Alias = request.Alias;
             product.PrintName = request.PrintName;
             product.HsnCode = request.HsnCode;
-            product.Barcode = request.Barcode;
             product.GstApplicable = request.GstApplicable;
             product.GSTNature = request.GSTNature;
             product.GSTTaxability = request.GSTTaxability;
