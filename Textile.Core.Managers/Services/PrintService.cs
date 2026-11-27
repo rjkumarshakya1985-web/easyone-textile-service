@@ -60,8 +60,7 @@ namespace Textile.Core.Managers.Services
                         .GenerateRandomPrefixedSuffixedNumber(),
                     MrpRate = detail.MrpRate.ToString("0.00"),
                     PurchaseRate = detail.PurchaseRate,
-                    SupplierCode = saleVoucher.Supplier.City.Name.Substring(0, 1)
-                                    + saleVoucher.Supplier.Code,
+                    SupplierCode = saleVoucher.Supplier.Code,
                     Name = saleVoucher.Supplier.Name,
                     ProductName = detail.Product.Name,
                     PrintDateString = DateTime.UtcNow.ToString("ddMMyyyy"),
@@ -93,8 +92,7 @@ namespace Textile.Core.Managers.Services
                         .GenerateRandomPrefixedSuffixedNumber(),
                     MrpRate = supplierProduct.MrpRate?.ToString("0.00") ?? "0.00",
                     PurchaseRate = supplierProduct.PurchaseRate,
-                    SupplierCode = supplier.City.Name.Substring(0, 1)
-                                    + supplier.Code,
+                    SupplierCode = supplier.Code,
                     Name = supplier.Name,
                     ProductName = supplierProduct.Name,
                     PrintDateString = DateTime.UtcNow.ToString("ddMMyyyy"),
