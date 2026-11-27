@@ -73,7 +73,7 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
             {
                 Name = saleVoucher.Supplier.Name,
                 GstIn = saleVoucher.Supplier.GstIn,
-                SupplierCode = saleVoucher.Supplier.City.Name.Substring(0, 1) + saleVoucher.Supplier.Code,
+                SupplierCode =  saleVoucher.Supplier.Code,
                Department= saleVoucher.Supplier.SubDepartment.Department.Name,
                SubDepartment=saleVoucher.Supplier.SubDepartment.Name
             };
@@ -147,7 +147,7 @@ namespace Textile.Core.Managers.Handlers.Query.SaleVouchers.Print
                             RetailRate = d.RetailPrice.GenerateRandomPrefixedSuffixedNumber(),
                             MrpRate = d.MrpRate.ToString(".00"),
                             PurchaseRate = d.PurchaseRate,
-                            SupplierCode = saleVoucher.Supplier.City.Name.Substring(0, 1) + saleVoucher.Supplier.Code,
+                            SupplierCode = saleVoucher.Supplier.Code,
                             Name = saleVoucher.Supplier.Name,
                             ProductName = d.Product.PrintName,
                             PrintDateString = DateTime.Now.ToString("ddMMyyyy"),
